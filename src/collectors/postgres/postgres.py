@@ -514,6 +514,15 @@ class DatabaseReplicationStats(QueryStats):
     """
 
 
+class DatabaseXidAge(QueryStats):
+    path = "%(datname)s.datfrozenxid.%(metric)s"
+    multi_db = False
+    query = """
+        SELECT datname, age(datfrozenxid) AS age
+        FROM pg_database WHERE datallowconn = TRUE
+    """
+
+
 metrics_registry = {
     'DatabaseStats': DatabaseStats,
     'DatabaseConnectionCount': DatabaseConnectionCount,
@@ -533,18 +542,19 @@ metrics_registry = {
     'TableScanStats': TableScanStats,
     'TupleAccessStats': TupleAccessStats,
     'DatabaseReplicationStats': DatabaseReplicationStats,
+    'DatabaseXidAge': DatabaseXidAge,
 }
 
 registry = {
     'basic': [
         'DatabaseStats',
         'DatabaseConnectionCount',
-        'DatabaseReplicationStats',
     ],
     'extended': [
         'DatabaseStats',
         'DatabaseConnectionCount',
         'DatabaseReplicationStats',
+        'DatabaseXidAge',
         'UserTableStats',
         'UserIndexStats',
         'UserTableIOStats',
